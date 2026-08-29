@@ -48,6 +48,16 @@ def get_report_data(db_path: str = DB_PATH) -> Dict[str, Any]:
     )
     daily_orders = [dict(row) for row in cursor.fetchall()]
 
+    # 5. All orders (for the long table spanning multiple pages)
+    cursor.execute(
+        """
+        SELECT id, customer, product, amount, created_at
+        FROM orders
+        ORDER BY created_at DESC
+        """
+    )
+    all_orders = [dict(row) for row in cursor.fetchall()]
+
     conn.close()
 
     return {
@@ -55,9 +65,10 @@ def get_report_data(db_path: str = DB_PATH) -> Dict[str, Any]:
         "total_revenue": total_revenue,
         "top_5_products_by_revenue": top_products,
         "orders_last_7_days": daily_orders,
+        "all_orders": all_orders,
     }
 
 
 if __name__ == "__main__":
     report = get_report_data()
-    print(json.dumps(report, indent=2))
+    print(json.dumps({k: v for k, v in report.items() if k != "all_orders"}, indent=2))
