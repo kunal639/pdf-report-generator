@@ -161,6 +161,6 @@ In a real business, skipping this kind of check can cause real problems — like
 
 ## 🖼️ 6. Report Preview
 
-./report_screenshot.PNG
+![Executive Sales Report - Page 1](report_screenshot.PNG)
 
 ---
