@@ -1,14 +1,12 @@
 import os
-import asyncio
 from datetime import datetime
-from playwright.async_api import async_playwright
+from playwright.sync_api import sync_playwright
 from report import get_report_data
 
 
 def generate_html(data: dict) -> str:
     today_str = datetime.now().strftime("%B %d, %Y")
 
-    # Generate Top 5 Products table rows
     top_products_rows = "".join(
         f"""
         <tr>
@@ -20,7 +18,6 @@ def generate_html(data: dict) -> str:
         for row in data["top_5_products_by_revenue"]
     )
 
-    # Generate All Orders table rows (all 200 rows to create a multi-page document)
     all_orders_rows = "".join(
         f"""
         <tr>
@@ -103,7 +100,6 @@ def generate_html(data: dict) -> str:
             margin-bottom: 16px;
             font-size: 9pt;
         }}
-        /* KEY PRINT CSS: repeat headers and avoid slicing rows */
         thead {{
             display: table-header-group;
         }}
@@ -177,20 +173,20 @@ def generate_html(data: dict) -> str:
 """
 
 
-async def render_pdf(output_path: str = "reports/test.pdf"):
+def render_pdf_sync(output_path: str = "reports/test.pdf") -> str:
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     data = get_report_data()
     html_content = generate_html(data)
 
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        page = await browser.new_page()
-        await page.set_content(html_content, wait_until="networkidle")
-        await page.pdf(path=output_path, format="A4", print_background=True)
-        await browser.close()
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.set_content(html_content, wait_until="networkidle")
+        page.pdf(path=output_path, format="A4", print_background=True)
+        browser.close()
 
-    print(f"Report PDF successfully generated at: {output_path}")
+    return output_path
 
 
 if __name__ == "__main__":
-    asyncio.run(render_pdf())
+    render_pdf_sync()
