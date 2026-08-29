@@ -1,10 +1,13 @@
-# Python-generated files
+# Python / Virtual Environment
+.venv/
 __pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
+*.pyc
 
-# Virtual environments
-.venv
+# Local Database & Generated PDF Reports
+report.db
+reports/
+*.pdf
+
+# Environment & OS files
+.DS_Store
+Thumbs.db
